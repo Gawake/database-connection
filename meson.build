@@ -8,3 +8,5 @@ database_connection_sources = files(
 	'rules-reader.c',
 	'debugger.c'
 )
+
+database_connection_deps = dependency('sqlite3')
