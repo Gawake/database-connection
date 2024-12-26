@@ -6,7 +6,8 @@ database_connection_sources = files(
 	'gawake-types.c',
 	'rules-manager.c',
 	'rules-reader.c',
-	'debugger.c'
+	'debugger.c',
+	'get-time.c'
 )
 
 database_connection_deps = dependency('sqlite3')

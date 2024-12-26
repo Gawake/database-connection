@@ -84,7 +84,8 @@ get_config (void)
   if (rc != SQLITE_DONE)
     {
       DEBUG_PRINT_CONTEX;
-      fprintf (stderr, "ERROR (failed to query rule): %s\n"), sqlite3_errmsg (utils_get_pdb ());
+      /* TODO */
+      /* fprintf (stderr, "ERROR (failed to query rule): %s\n"), sqlite3_errmsg (utils_get_pdb ()); */
       sqlite3_finalize (stmt);
       return EXIT_FAILURE;
     }

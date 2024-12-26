@@ -24,44 +24,11 @@
 #include <time.h>
 
 #include "database-connection-utils.h"
+#include "get-time.h"
+#include "debugger.h"
 
 static sqlite3 *db = NULL;
 static char sql[SQL_SIZE];
-
-static int get_time_tm (struct tm **timeinfo);
-static int get_time (time_t *time_now);
-
-// Get the system time (now) as struct tm
-static int
-get_time_tm (struct tm **timeinfo)
-{
-  time_t rawtime;
-  time (&rawtime);
-
-  // If fails
-  if (rawtime == (time_t) -1)
-    {
-      fprintf (stderr, "ERROR: failed while getting time\n");
-      return EXIT_FAILURE;
-    }
-
-  *timeinfo = localtime (&rawtime);
-  return EXIT_SUCCESS;
-}
-
-// Get the system time (now) as time_t
-static
-int get_time (time_t *time_now)
-{
-  time (time_now);
-  if (*time_now ==  (time_t) -1)
-    {
-      fprintf (stderr, "ERROR: failed while getting time\n");
-      return EXIT_FAILURE;
-    }
-  else
-    return EXIT_SUCCESS;
-}
 
 int
 utils_validate_rule (const Rule *rule)

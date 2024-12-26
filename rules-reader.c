@@ -218,7 +218,8 @@ rule_get_all (const Table table,
   if (rc != SQLITE_DONE)
     {
       DEBUG_PRINT_CONTEX;
-      fprintf (stderr, "ERROR (failed to query rule): %s\n"), sqlite3_errmsg (utils_get_pdb ());
+      /* TODO */
+      /* fprintf (stderr, "ERROR (failed to query rule): %s\n"), sqlite3_errmsg (utils_get_pdb ()); */
       free (*rules);
       sqlite3_finalize (stmt);
       return EXIT_FAILURE;
