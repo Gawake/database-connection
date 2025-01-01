@@ -29,6 +29,7 @@ const char *MODE[] = {
   "mem",
   "disk",
   "off",
+  "",
   "no"
 };
 
