@@ -1,4 +1,4 @@
-/* database-connection-utils.h
+/* rule-validation.h
  *
  * Copyright 2021-2025 Kelvin Novais
  *
@@ -18,17 +18,12 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-#ifndef DATABASE_CONNECTION_UTILS_H_
-#define DATABASE_CONNECTION_UTILS_H_
+#ifndef RULE_VALIDATION_H_
+#define RULE_VALIDATION_H_
 
 #include "gawake-types.h"
-#include <sqlite3.h>
 
-#define SQL_SIZE 256
+int rule_validate_rule (const Rule *rule);
+int rule_validate_table (const Table table);
 
-int utils_run_sql (void);
-char* utils_get_sql (void);
-sqlite3* utils_get_pdb (void);
-sqlite3** utils_get_ppdb (void);
-
-#endif /* DATABASE_CONNECTION_UTILS_H_ */
+#endif /* RULE_VALIDATION_H_ */

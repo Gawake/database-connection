@@ -1,6 +1,6 @@
 /* rules-reader.c
  *
- * Copyright 2021-2024 Kelvin Novais
+ * Copyright 2021-2025 Kelvin Novais
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@
 #include <sqlite3.h>
 
 #include "database-connection-utils.h"
+#include "rule-validation.h"
 #include "debugger.h"
 #include "rules-reader.h"
 
@@ -30,7 +31,7 @@ rule_get_single (const uint16_t id,
                  const Table table,
                  Rule *rule)
 {
-  if (utils_validate_table (table))
+  if (rule_validate_table (table))
     return EXIT_FAILURE;
 
   // Database related variables
@@ -119,7 +120,7 @@ rule_get_all (const Table table,
   char timestamp[9]; // HH:MM:SS'\0' = 9 characters
 
 
-  if (utils_validate_table (table))
+  if (rule_validate_table (table))
     return EXIT_FAILURE;
 
   // Count the number of rows

@@ -1,6 +1,6 @@
 /* database-connection-utils.c
  *
- * Copyright 2021-2024 Kelvin Novais
+ * Copyright 2021-2025 Kelvin Novais
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-#include <string.h>
 #include <stdlib.h>
 #include <sqlite3.h>
 #include <time.h>
@@ -29,46 +28,6 @@
 
 static sqlite3 *db = NULL;
 static char sql[SQL_SIZE];
-
-int
-utils_validate_rule (const Rule *rule)
-{
-  // name can't be bigger than the max value
-  bool name = !(strlen (rule->name) >= RULE_NAME_LENGTH);     // (>=) do not include null terminator
-
-  // hour [00,23]
-  bool hour = rule->hour <= 23;     // Due to the data type, it is always >= 0
-
-  // minutes [0, 59]
-  bool minutes = rule->minutes <= 59;
-
-  // mode according to enum predefined values
-  bool mode = (rule->mode >= 0 && rule->mode <= MODE_OFF);
-
-  bool table = (rule->table == TABLE_ON || rule->table == TABLE_OFF);
-
-  DEBUG_PRINT (("VALIDATION:\nName: %d\n\tName length: %lu\n"\
-                "Hour: %d\nMinutes: %d\nMode: %d\nTable: %d",
-                name, strlen (rule->name), hour, minutes, mode, table));
-
-  if (name && hour && minutes && mode && table)
-    return EXIT_SUCCESS;
-  else
-    {
-      fprintf (stderr, "Invalid rule values\n\n");
-      return EXIT_FAILURE;
-    }
-}
-
-int
-utils_validate_table (const Table table)
-{
-  if (table == TABLE_ON || table == TABLE_OFF)
-    return EXIT_SUCCESS;
-
-  fprintf (stderr, "Invalid table\n\n");
-  return EXIT_FAILURE;
-}
 
 int
 utils_run_sql (void)

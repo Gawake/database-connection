@@ -1,6 +1,6 @@
 /* rules-manager.c
  *
- * Copyright 2021-2024 Kelvin Novais
+ * Copyright 2021-2025 Kelvin Novais
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,12 +22,13 @@
 #include <sqlite3.h>
 
 #include "database-connection-utils.h"
+#include "rule-validation.h"
 #include "rules-manager.h"
 
 int
 rule_add (const Rule *rule)
 {
-  if (utils_validate_rule (rule))
+  if (rule_validate_rule (rule))
     return EXIT_FAILURE;
 
   switch (rule->table)
@@ -73,7 +74,7 @@ int
 rule_delete (const uint16_t id,
              const Table table)
 {
-  if (utils_validate_table (table))
+  if (rule_validate_table (table))
     return EXIT_FAILURE;
 
   sqlite3_snprintf (SQL_SIZE, utils_get_sql (), "DELETE FROM %s WHERE id = %d;", TABLE[table], id);
@@ -86,7 +87,7 @@ rule_enable_disable (const uint16_t id,
                      const Table table,
                      const bool active)
 {
-  if (utils_validate_table (table))
+  if (rule_validate_table (table))
     return EXIT_FAILURE;
 
   sqlite3_snprintf (SQL_SIZE, utils_get_sql (), "UPDATE %s SET active = %d WHERE id = %d;", TABLE[table], active, id);
@@ -97,7 +98,7 @@ rule_enable_disable (const uint16_t id,
 int
 rule_edit (const Rule *rule)
 {
-  if (utils_validate_rule (rule))
+  if (rule_validate_rule (rule))
     return EXIT_FAILURE;
 
   switch (rule->table)

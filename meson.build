@@ -3,6 +3,7 @@ database_connection_sources = files(
 	'configuration-reader.c',
 	'database-connection.c',
 	'database-connection-utils.c',
+	'rule-validation.c',
 	'gawake-types.c',
 	'rules-manager.c',
 	'rules-reader.c',

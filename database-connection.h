@@ -1,6 +1,6 @@
 /* database-connection.h
  *
- * Copyright 2021-2024 Kelvin Novais
+ * Copyright 2021-2025 Kelvin Novais
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@
 #include <sqlite3.h>
 
 #include "gawake-types.h"
+#include "rule-validation.h"
 
 int connect_database (bool read_only);
 int disconnect_database (void);
