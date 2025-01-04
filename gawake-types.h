@@ -27,13 +27,18 @@ extern const char *TABLE[];
 // ATTENTION: enum and char[] must be synced
 typedef enum
 {
+  MODE_STANDBY,
+  MODE_FREEZE,
   MODE_MEM,
   MODE_DISK,
   MODE_OFF,
   MODE_LAST,
 
-  // Internal use:
-  MODE_NO
+  // Internal use
+  MODE_NO,
+  MODE_ON,
+  MODE_DISABLE,
+  MODE_SHOW
 } Mode;
 
 extern const char *MODE[];

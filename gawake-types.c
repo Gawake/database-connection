@@ -1,6 +1,6 @@
 /* gawake-types.c
  *
- * Copyright 2021-2024 Kelvin Novais
+ * Copyright 2021-2025 Kelvin Novais
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,15 +22,23 @@
 
 const char *TABLE[] = {
   "rules_turnon",
-  "rules_turnoff"
+  "rules_turnoff",
+  ""                // TABLE_LAST
 };
 
 const char *MODE[] = {
+  "standby",
+  "freeze",
   "mem",
   "disk",
   "off",
-  "",
-  "no"
+  "",         // MODE_LAST
+
+  // Internal use
+  "no",
+  "on",
+  "disable",
+  "show"
 };
 
 const char *DAYS[] = {"sun", "mon", "tue", "wed", "thu", "fri", "sat"};
