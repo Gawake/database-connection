@@ -38,7 +38,7 @@ rule_validate_rule (const Rule *rule)
   bool minutes = rule->minutes <= 59;
 
   // mode according to enum predefined values
-  bool mode = (rule->mode >= 0 && rule->mode <= MODE_OFF);
+  bool mode = (rule->mode >= 0 && rule->mode <= MODE_LAST);
 
   bool table = (rule->table == TABLE_ON || rule->table == TABLE_OFF);
 
