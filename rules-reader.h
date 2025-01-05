@@ -1,6 +1,6 @@
 /* rules-reader.h
  *
- * Copyright 2021-2024 Kelvin Novais
+ * Copyright 2021-2025 Kelvin Novais
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

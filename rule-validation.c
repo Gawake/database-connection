@@ -28,6 +28,8 @@
 int
 rule_validate_rule (const Rule *rule)
 {
+  bool mode = false;
+
   // name can't be bigger than the max value
   bool name = !(strlen (rule->name) >= RULE_NAME_LENGTH);     // (>=) do not include null terminator
 
@@ -37,10 +39,14 @@ rule_validate_rule (const Rule *rule)
   // minutes [0, 59]
   bool minutes = rule->minutes <= 59;
 
-  // mode according to enum predefined values
-  bool mode = (rule->mode >= 0 && rule->mode <= MODE_LAST);
-
+  // table
   bool table = (rule->table == TABLE_ON || rule->table == TABLE_OFF);
+
+  // mode according to enum predefined values
+  if (rule->table == TABLE_OFF)
+    mode = (rule->mode >= 0 && rule->mode <= MODE_LAST);
+  else
+    mode = true;
 
   DEBUG_PRINT (("VALIDATION:\nName: %d\n\tName length: %lu\n"\
                 "Hour: %d\nMinutes: %d\nMode: %d\nTable: %d",

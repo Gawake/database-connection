@@ -31,50 +31,58 @@ rule_get_single (const uint16_t id,
                  const Table table,
                  Rule *rule)
 {
-  if (rule_validate_table (table))
-    return EXIT_FAILURE;
-
   // Database related variables
   int rc;
   struct sqlite3_stmt *stmt;
+  // Temporary variables to receive the hour and minutes, and then pass to the structure
+  int hour, minutes;
+  char timestamp[9]; // HH:MM:SS'\0' = 9 characters
+
+
+  if (rule_validate_table (table))
+    return EXIT_FAILURE;
 
   // Generate SQL
-  sqlite3_snprintf (SQL_SIZE, utils_get_sql (), "SELECT * FROM %s WHERE id = %d LIMIT 1;", TABLE[table], id);
+  // SELECT length(<table>.rule_name), * FROM <table>;
+  sqlite3_snprintf (SQL_SIZE, utils_get_sql (),
+                    "SELECT * FROM %s WHERE id=%d;",
+                    TABLE[table], id);
 
   DEBUG_PRINT (("Generated SQL:\n\t%s", utils_get_sql ()));
 
-  // Verify ID (also prepare statement)
-  if (sqlite3_prepare_v2 (utils_get_pdb (), utils_get_sql (), -1, &stmt, NULL) == SQLITE_OK
-      && sqlite3_step (stmt) != SQLITE_ROW)
+  // Prepare statement
+  if (sqlite3_prepare_v2 (utils_get_pdb (), utils_get_sql (), -1, &stmt, NULL) != SQLITE_OK)
     {
-      fprintf (stderr, "Invalid ID\n\n");
+      DEBUG_PRINT_CONTEX;
+      fprintf (stderr, "ERROR: Failed to query rule\n");
       sqlite3_finalize (stmt);
       return EXIT_FAILURE;
     }
 
   // Query data
   /* ATTENTION columns numbers:
-   *    0     1             2       3       (...)       9       10          11
-   *    id    rule_name     time    sun     (...)       sat     active      mode
-   *                                                                        ^~~~
-   *                                                                        |
-   *                                                  only for turn off rules
+   *    1     2             3       4       (...)       10      11        12
+   *    id    rule_name     time    sun     (...)       sat     active    mode
+   *                                                                      ^~~~
+   *                                                                         |
+   *                                                     only for turn off rules
    */
-  // Temporary variables to receive the minutes and pass to the structure;
-  int hour, minutes;
-  char timestamp[9]; // HH:MM:SS'\0' = 9 characters
   while ((rc = sqlite3_step (stmt)) == SQLITE_ROW)
     {
       // ID
       rule->id = (uint16_t) sqlite3_column_int (stmt, 0);
+
       // NAME
-      snprintf (rule->name, RULE_NAME_LENGTH, "%s", sqlite3_column_text (stmt, 1));
+      snprintf (rule->name,                     // string pointer
+                RULE_NAME_LENGTH,               // size
+                "%s",                           // format
+                sqlite3_column_text (stmt, 1)); // arguments
 
       // MINUTES AND HOUR
       sqlite3_snprintf (9, timestamp, "%s", sqlite3_column_text (stmt, 2));
       sscanf (timestamp, "%02d:%02d", &hour, &minutes);
-      rule->hour = (uint8_t) hour;
-      rule->minutes = minutes;
+      rule->hour =  (uint8_t) hour;
+      rule->minutes = (uint8_t) minutes;
 
       // DAYS
       for (int i = 0; i <= 6; i++)
@@ -84,9 +92,9 @@ rule_get_single (const uint16_t id,
         }
 
       // ACTIVE
-      rule->active = (bool) sqlite3_column_int (stmt, 10); // active
+      rule->active = (bool) sqlite3_column_int (stmt, 10);
 
-      // MODE (for turn on rules it isn't used):
+      // MODE (for turn on rules it isn't used, assigning 0):
       rule->mode = (Mode) ((table == TABLE_OFF) ? sqlite3_column_int (stmt, 11) : 0);
 
       // TABLE
@@ -96,12 +104,27 @@ rule_get_single (const uint16_t id,
   if (rc != SQLITE_DONE)
     {
       DEBUG_PRINT_CONTEX;
-      fprintf (stderr, "ERROR (failed to query rule): %s\n", sqlite3_errmsg (utils_get_pdb ()));
+      /* TODO */
+      /* fprintf (stderr, "ERROR (failed to query rule): %s\n"), sqlite3_errmsg (utils_get_pdb ()); */
       sqlite3_finalize (stmt);
       return EXIT_FAILURE;
     }
 
-  sqlite3_finalize (stmt);
+  sqlite3_finalize(stmt);
+
+  DEBUG_PRINT (("rule_get_single:\n"\
+                "\tId: %d\n"
+                "\tName: %s\n"\
+                "\tTime: %02d:%02d\n"\
+                "\tDays: [%d, %d, %d,  %d, %d, %d, %d]\n"\
+                "\tActive: %d\n"\
+                "\tMode: %d\n",
+                rule->id,
+                rule->name,
+                rule->hour, rule->minutes,
+                rule->days[0], rule->days[1], rule->days[2], rule->days[3], rule->days[4], rule->days[5], rule->days[6],
+                rule->active,
+                rule->mode));
 
   return EXIT_SUCCESS;
 }
@@ -137,14 +160,14 @@ rule_get_all (const Table table,
 
   DEBUG_PRINT (("Row count: %d", *rowcount));
 
-  // SQL_SIZEate structure array
+  // Allocate structure array
   // https://www.youtube.com/watch?v=lq8tJS3g6tY
   // TODO should "sizeof (**rules)" be "sizeof (**Rules)"
   *rules = malloc (*rowcount * sizeof (**rules));
   if (*rules == NULL)
     {
       DEBUG_PRINT_CONTEX;
-      fprintf (stderr, "ERROR: Failed to SQL_SIZEate memory\n");
+      fprintf (stderr, "ERROR: Failed to allocate memory\n");
       sqlite3_finalize (stmt);
       return EXIT_FAILURE;
     }
