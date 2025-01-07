@@ -61,7 +61,7 @@ rule_get_single (const uint16_t id,
 
   // Query data
   /* ATTENTION columns numbers:
-   *    1     2             3       4       (...)       10      11        12
+   *    0     1             2       3       (...)       9       10        11
    *    id    rule_name     time    sun     (...)       sat     active    mode
    *                                                                      ^~~~
    *                                                                         |
