@@ -25,11 +25,13 @@
 #include "rule-validation.h"
 #include "rules-manager.h"
 
-int
+// Returns 0 if fails
+// returns > 0 as the rule id
+uint16_t
 rule_add (const Rule *rule)
 {
   if (rule_validate_rule (rule))
-    return EXIT_FAILURE;
+    return 0;
 
   switch (rule->table)
     {
@@ -61,13 +63,16 @@ rule_add (const Rule *rule)
       break;
 
     case TABLE_LAST:
-      return EXIT_FAILURE;
+      return 0;
 
     default:
-      return EXIT_FAILURE;
+      return 0;
     }
 
-  return utils_run_sql ();
+  if (utils_run_sql () == EXIT_SUCCESS)
+    return ((uint16_t) sqlite3_last_insert_rowid (utils_get_pdb ()));
+  else
+    return 0;
 }
 
 int

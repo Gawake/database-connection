@@ -1,6 +1,6 @@
 /* rules-manager.h
  *
- * Copyright 2021-2024 Kelvin Novais
+ * Copyright 2021-2025 Kelvin Novais
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@
 
 #include "gawake-types.h"
 
-int rule_add (const Rule *rule);
+uint16_t rule_add (const Rule *rule);
 int rule_delete (const uint16_t id, const Table table);
 int rule_enable_disable (const uint16_t id, const Table table, const bool active);
 int rule_edit (const Rule *rule);
