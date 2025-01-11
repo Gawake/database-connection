@@ -26,7 +26,7 @@
 uint16_t rule_add (const Rule *rule);
 int rule_delete (const uint16_t id, const Table table);
 int rule_enable_disable (const uint16_t id, const Table table, const bool active);
-int rule_edit (const Rule *rule);
+uint16_t rule_edit (const Rule *rule);
 int rule_custom_schedule (const uint8_t hour,
                           const uint8_t minutes,
                           const uint8_t day,

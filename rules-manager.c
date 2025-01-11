@@ -100,11 +100,11 @@ rule_enable_disable (const uint16_t id,
   return utils_run_sql ();
 }
 
-int
+uint16_t
 rule_edit (const Rule *rule)
 {
   if (rule_validate_rule (rule))
-    return EXIT_FAILURE;
+    return 0;
 
   switch (rule->table)
     {
@@ -141,10 +141,13 @@ rule_edit (const Rule *rule)
 
     case TABLE_LAST:
     default:
-      return EXIT_FAILURE;
+      return 0;
     }
 
-  return utils_run_sql ();
+  if (utils_run_sql () == EXIT_FAILURE)
+    return 0;
+
+  return rule->id;
 }
 
 int
@@ -186,3 +189,4 @@ rule_custom_schedule (const uint8_t hour,
 
   return ret;
 }
+
