@@ -23,7 +23,14 @@
 #include <stdbool.h>
 
 #include "debugger.h"
+#include "rules-reader.h"
 #include "rule-validation.h"
+
+struct _RuleTimeValidator
+{
+  uint16_t row_count;
+  Rule *rules;
+};
 
 int
 rule_validate_rule (const Rule *rule)
@@ -69,4 +76,57 @@ rule_validate_table (const Table table)
 
   fprintf (stderr, "Invalid table\n\n");
   return EXIT_FAILURE;
+}
+
+RuleTimeValidator *
+rule_validate_time_init (const Table table)
+{
+  RuleTimeValidator *time_validator = NULL;
+  int status = 0;
+
+  time_validator = malloc (sizeof (RuleTimeValidator));
+
+  status = rule_get_all (table, &time_validator->rules, &time_validator->row_count);
+
+  if (status == EXIT_FAILURE)
+    {
+      free (time_validator);
+      return NULL;
+    }
+
+  return time_validator;
+}
+
+uint16_t
+rule_validate_time (RuleTimeValidator *self,
+                    const uint8_t hour,
+                    const uint8_t minutes,
+                    const bool days[7])
+{
+  if (self == NULL)
+    {
+      fprintf (stderr, "Rule not validate\n\n");
+      // return as not validated rule
+      return 1;
+    }
+
+  for (int idx = 0; idx < self->row_count; idx++)
+    {
+      for (int d = 0; d < 7; d++)
+        {
+          if ((self->rules[idx].days[d] && days[d])
+              && self->rules[idx].hour == hour
+              && self->rules[idx].minutes == minutes)
+            return self->rules[idx].id;
+        }
+    }
+
+  return 0;
+}
+
+void
+rule_validate_time_finalize (RuleTimeValidator **self)
+{
+  free (*self);
+  self = NULL;
 }
