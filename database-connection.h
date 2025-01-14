@@ -30,6 +30,7 @@
 
 int connect_database (bool read_only);
 int disconnect_database (void);
+bool check_user_group (void);
 
 # include "rules-reader.h"
 

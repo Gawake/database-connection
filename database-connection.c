@@ -1,6 +1,6 @@
 /* database-connection.c
  *
- * Copyright 2021-2024 Kelvin Novais
+ * Copyright 2021-2025 Kelvin Novais
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +19,11 @@
  */
 
 #include <stdio.h>
+#include <string.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <pwd.h>
+#include <grp.h>
 
 #include "database-connection.h"
 #include "database-connection-utils.h"
@@ -69,4 +74,65 @@ disconnect_database (void)
   int rc = sqlite3_close (utils_get_pdb ());
   *db = NULL;
   return rc;
+}
+
+bool
+check_user_group (void)
+{
+  int ngroups = 0;
+  gid_t *groups = NULL;
+  uid_t uid;
+  struct passwd *pw = NULL;
+
+  // Get the UID
+  uid = getuid ();
+
+  // Get struct pw
+  pw = getpwuid (uid);
+  if (pw == NULL)
+    {
+      DEBUG_PRINT_CONTEX;
+      fprintf (stderr, "Error on getpwuid\n");
+      return true;
+    }
+
+  // Get ngroups
+  getgrouplist (pw->pw_name, pw->pw_gid, NULL, &ngroups);
+
+  // Allocate memory for groups
+  groups = malloc (ngroups * sizeof (gid_t));
+  if (groups == NULL)
+    {
+      DEBUG_PRINT_CONTEX;
+      fprintf (stderr, "Failed to allocate memory for groups\n");
+      return true;
+    }
+
+  // Get groups
+  getgrouplist (pw->pw_name, pw->pw_gid, groups, &ngroups);
+
+  // Check if user is in group gawake
+  for (int i = 0; i < ngroups; i++)
+    {
+      struct group* gr = getgrgid (groups[i]);
+
+      if (gr == NULL)
+        {
+          DEBUG_PRINT_CONTEX;
+          fprintf (stderr, "Failed to getgrgid\n");
+          free (groups);
+          return true;
+        }
+
+      if (strcmp ("gawake", gr->gr_name) == 0)
+        {
+          printf ("Info: user is in group \"gawake\"\n");
+          free (groups);
+          return false;
+        }
+    }
+
+  free (groups);
+  groups = NULL;
+  return true;
 }
