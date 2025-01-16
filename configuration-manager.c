@@ -1,6 +1,6 @@
 /* configuration-manager.c
  *
- * Copyright 2021-2024 Kelvin Novais
+ * Copyright 2021-2025 Kelvin Novais
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@ int
 configuration_set_default_mode (Mode default_mode)
 {
   // Validate mode
-  if (default_mode >= MODE_MEM && default_mode <= MODE_OFF)
+  if (default_mode >= 0 && default_mode <= MODE_LAST)
     {
       sqlite3_snprintf (SQL_SIZE, utils_get_sql (),
                         "UPDATE config "\
