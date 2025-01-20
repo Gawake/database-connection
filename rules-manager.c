@@ -175,11 +175,11 @@ rule_custom_schedule (const uint8_t hour,
                     "UPDATE custom_schedule "\
                     "SET hour = %d, minutes = %d, "\
                     "day = %d, month = %d, year = %d, "\
-                    "mode = %d, use_args = %d "\
+                    "mode = %d "\
                     "WHERE id = 1;",
                     hour, minutes,
                     day, month, year,
-                    mode, true);
+                    mode);
 
   int ret = utils_run_sql ();
 
