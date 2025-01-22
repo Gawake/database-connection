@@ -8,7 +8,11 @@ database_connection_sources = files(
 	'rules-manager.c',
 	'rules-reader.c',
 	'debugger.c',
-	'get-time.c'
+	'get-time.c',
+	'time-converter.c'
 )
 
-database_connection_deps = dependency('sqlite3')
+database_connection_deps = [
+	dependency('sqlite3'),
+	dependency('gio-2.0')
+]

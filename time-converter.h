@@ -1,4 +1,4 @@
-/* database-connection.h
+/* time-converter.h
  *
  * Copyright 2021-2025 Kelvin Novais
  *
@@ -18,32 +18,31 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+#ifndef TIME_CONVERTER_H_
+#define TIME_CONVERTER_H_
 
-#ifndef DATABASE_CONNECTION_H_
-#define DATABASE_CONNECTION_H_
+#include <inttypes.h>
 
-#include <stdbool.h>
-#include <sqlite3.h>
+typedef enum
+{
+  TIME_FORMAT_TWENTYFOUR,
+  TIME_FORMAT_TWELVE
+} TimeFormat;
 
-#include "gawake-types.h"
-#include "rule-validation.h"
-#include "time-converter.h"
+typedef enum
+{
+  PERIOD_AM = 0,
+  PERIOD_PM
+} Period;
 
-int connect_database (bool read_only);
-int disconnect_database (void);
-bool check_user_group (void);
+TimeFormat time_converter_get_format (void);
 
-# include "rules-reader.h"
+int time_converter_to_twelve_format (uint8_t  hour24,
+                                     uint8_t *hour12,
+                                     Period  *period);
 
-#ifdef ALLOW_MANAGING_RULES
-# include "rules-manager.h"
-#endif
+int time_converter_to_twentyfour_format (uint8_t  hour12,
+                                         uint8_t *hour24,
+                                         Period   period);
 
-
-# include "configuration-reader.h"
-
-#ifdef ALLOW_MANAGING_CONFIGURATION
-# include "configuration-manager.h"
-#endif
-
-#endif /* DATABASE_CONNECTION_H_ */
+#endif /* TIME_CONVERTER_H_ */

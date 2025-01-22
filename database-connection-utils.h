@@ -22,6 +22,7 @@
 #define DATABASE_CONNECTION_UTILS_H_
 
 #include "gawake-types.h"
+#include "time-converter.h"
 #include <sqlite3.h>
 
 #define SQL_SIZE 256
