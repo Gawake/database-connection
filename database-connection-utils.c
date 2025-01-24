@@ -20,10 +20,8 @@
 
 #include <stdlib.h>
 #include <sqlite3.h>
-#include <time.h>
 
 #include "database-connection-utils.h"
-#include "get-time.h"
 #include "debugger.h"
 
 static sqlite3 *db = NULL;
@@ -73,72 +71,4 @@ sqlite3 * utils_get_pdb (void)
 sqlite3 ** utils_get_ppdb (void)
 {
   return &db;
-}
-
-int
-utils_validade_rtcwake_args (RtcwakeArgs *rtcwake_args)
-{
-  DEBUG_PRINT (("Validating rtcwake_args..."));
-
-  bool hour, minutes, date, year, mode;
-  hour = minutes = date = year  = mode = false;
-  int ret;
-  struct tm *timeinfo;
-
-  // Hour
-  if (rtcwake_args->hour >= 0 && rtcwake_args->hour <= 23)
-    hour = true;
-
-  // Minutes
-  if (rtcwake_args->minutes >= 0 && rtcwake_args->minutes <= 59)
-    minutes = true;
-
-  // Date
-  struct tm input = {
-    .tm_mday = rtcwake_args->day,
-    .tm_mon = rtcwake_args->month - 1,
-    .tm_year = rtcwake_args->year - 1900,
-  };
-  time_t generated_time = mktime (&input);
-  timeinfo = localtime (&generated_time);
-  if (generated_time == -1
-      || rtcwake_args->day != timeinfo->tm_mday
-      || rtcwake_args->month != timeinfo->tm_mon + 1
-      || rtcwake_args->year != timeinfo->tm_year + 1900)
-    date = false;
-  else
-    date = true;
-
-  // Year (must be this year or at most the next, only)
-  get_time_tm (&timeinfo);
-  if (rtcwake_args->year > (timeinfo->tm_year + 1900 + 1))
-    year = false;
-  else
-    year = true;
-
-  switch (rtcwake_args->mode)
-    {
-    case MODE_MEM:
-    case MODE_DISK:
-    case MODE_OFF:
-    case MODE_NO:
-      mode = true;
-      break;
-
-    case MODE_LAST:
-    default:
-      mode = false;
-    }
-
-  if (hour && minutes && date && year && mode)
-    ret = 1;    // valid
-  else
-    ret = -1;   // invalid
-
-  DEBUG_PRINT (("RtcwakeArgs validation:\n"\
-                "\tHour: %d\n\tMinutes: %d\n\tDate: %d\n\tYear: %d\n"\
-                "\tMode: %d\n\tthis_year: %d\n\t--> Passed: %d",
-                hour, minutes, date, year, mode, timeinfo->tm_year + 1900, ret));
-
-  return ret;
 }

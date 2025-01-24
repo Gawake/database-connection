@@ -27,11 +27,6 @@ uint16_t rule_add (const Rule *rule);
 int rule_delete (const uint16_t id, const Table table);
 int rule_enable_disable (const uint16_t id, const Table table, const bool active);
 uint16_t rule_edit (const Rule *rule);
-int rule_custom_schedule (const uint8_t hour,
-                          const uint8_t minutes,
-                          const uint8_t day,
-                          const uint8_t month,
-                          const uint16_t year,
-                          const uint8_t mode);
+int rule_custom_schedule (const RtcwakeArgs *rtcwake_args);
 
 #endif /* RULES_MANAGER_H_ */

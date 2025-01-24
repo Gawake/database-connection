@@ -21,10 +21,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <time.h>
 
 #include "debugger.h"
 #include "rules-reader.h"
 #include "rule-validation.h"
+#include "get-time.h"
 
 struct _RuleTimeValidator
 {
@@ -129,4 +131,77 @@ rule_validate_time_finalize (RuleTimeValidator **self)
 {
   free (*self);
   self = NULL;
+}
+
+int
+rule_validade_rtcwake_args (const RtcwakeArgs *rtcwake_args)
+{
+  bool hour, minutes, date, year, mode;
+  int ret;
+  struct tm *timeinfo;
+  struct tm input = {
+    .tm_mday = rtcwake_args->day,
+    .tm_mon = rtcwake_args->month - 1,
+    .tm_year = rtcwake_args->year - 1900,
+  };
+  time_t generated_time = mktime (&input);
+
+  DEBUG_PRINT (("Validating rtcwake_args..."));
+  hour = minutes = date = year  = mode = false;
+
+  // Hour
+  if (rtcwake_args->hour >= 0 && rtcwake_args->hour <= 23)
+    hour = true;
+
+  // Minutes
+  if (rtcwake_args->minutes >= 0 && rtcwake_args->minutes <= 59)
+    minutes = true;
+
+  // Date
+  timeinfo = localtime (&generated_time);
+  if (generated_time == -1
+      || rtcwake_args->day != timeinfo->tm_mday
+      || rtcwake_args->month != timeinfo->tm_mon + 1
+      || rtcwake_args->year != timeinfo->tm_year + 1900)
+    date = false;
+  else
+    date = true;
+
+  // Year (must be this year or at most the next, only)
+  get_time_tm (&timeinfo);
+  if (rtcwake_args->year > (timeinfo->tm_year + 1900 + 1))
+    year = false;
+  else
+    year = true;
+
+  switch (rtcwake_args->mode)
+    {
+    case MODE_STANDBY:
+    case MODE_FREEZE:
+    case MODE_MEM:
+    case MODE_DISK:
+    case MODE_OFF:
+      mode = true;
+      break;
+
+    case MODE_LAST:
+    case MODE_NO:
+    case MODE_ON:
+    case MODE_DISABLE:
+    case MODE_SHOW:
+    default:
+      mode = false;
+    }
+
+  if (hour && minutes && date && year && mode)
+    ret = EXIT_SUCCESS;   // valid
+  else
+    ret = EXIT_FAILURE;   // invalid
+
+  DEBUG_PRINT (("RtcwakeArgs validation:\n"\
+                "\tHour: %d\n\tMinutes: %d\n\tDate: %d\n\tYear: %d\n"\
+                "\tMode: %d\n\tthis_year: %d\n\t--> Status (1 if not passed): %d",
+                hour, minutes, date, year, mode, timeinfo->tm_year + 1900, ret));
+
+  return ret;
 }

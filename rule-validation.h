@@ -37,4 +37,6 @@ uint16_t rule_validate_time (RuleTimeValidator *self,
                              const bool days[7]);
 void rule_validate_time_finalize (RuleTimeValidator **self);
 
+int rule_validade_rtcwake_args (const RtcwakeArgs *rtcwake_args);
+
 #endif /* RULE_VALIDATION_H_ */

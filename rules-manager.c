@@ -151,25 +151,11 @@ rule_edit (const Rule *rule)
 }
 
 int
-rule_custom_schedule (const uint8_t hour,
-                      const uint8_t minutes,
-                      const uint8_t day,
-                      const uint8_t month,
-                      const uint16_t year,
-                      const uint8_t mode)
+rule_custom_schedule (const RtcwakeArgs *rtcwake_args)
 {
-  RtcwakeArgs rtcwake_args = {
-    .hour = hour,
-    .minutes = minutes,
-    .day = day,
-    .month = month,
-    .year = year,
-    .mode = (Mode) mode,
-  };
-
-  // TODO
-  /* if (validade_rtcwake_args (&rtcwake_args) == -1) */
-  /*   return EXIT_FAILURE; */
+  int ret = EXIT_FAILURE;
+  if (rule_validade_rtcwake_args (rtcwake_args) == -1)
+    return EXIT_FAILURE;
 
   sqlite3_snprintf (SQL_SIZE, utils_get_sql (),
                     "UPDATE custom_schedule "\
@@ -177,11 +163,11 @@ rule_custom_schedule (const uint8_t hour,
                     "day = %d, month = %d, year = %d, "\
                     "mode = %d "\
                     "WHERE id = 1;",
-                    hour, minutes,
-                    day, month, year,
-                    mode);
+                    rtcwake_args->hour, rtcwake_args->minutes,
+                    rtcwake_args->day, rtcwake_args->month, rtcwake_args->year,
+                    rtcwake_args->mode);
 
-  int ret = utils_run_sql ();
+  ret = utils_run_sql ();
 
   // TODO
   /* if (ret == EXIT_SUCCESS) */
