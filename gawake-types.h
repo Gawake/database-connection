@@ -82,6 +82,14 @@ typedef struct
   Mode mode;
 } RtcwakeArgs;
 
+typedef enum
+{
+  RTCWAKE_ARGS_RETURN_FAILURE,
+  RTCWAKE_ARGS_RETURN_SUCESS,
+  RTCWAKE_ARGS_RETURN_NOT_FOUND,
+  RTCWAKE_ARGS_RETURN_INVALID
+} RtcwakeArgsReturn;
+
 #define RtcwakeArgs_s sizeof (RtcwakeArgs)
 
 #endif /* GAWAKE_TYPES_H_ */

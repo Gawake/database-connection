@@ -32,4 +32,8 @@ int rule_get_all (const Table table,
                   Rule **rules,
                   uint16_t *rowcount);
 
+// Mode: pass MODE_LAST to use the default mode
+RtcwakeArgsReturn rule_get_upcoming_on (RtcwakeArgs *rtcwake_args,
+                                        Mode         mode);
+
 #endif /* RULES_READER_H_ */
