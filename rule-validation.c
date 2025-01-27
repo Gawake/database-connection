@@ -101,22 +101,27 @@ rule_validate_time_init (const Table table)
 
 uint16_t
 rule_validate_time (RuleTimeValidator *self,
+                    const uint16_t rule_id,
                     const uint8_t hour,
                     const uint8_t minutes,
                     const bool days[7])
 {
   if (self == NULL)
     {
-      fprintf (stderr, "Rule not validate\n\n");
+      DEBUG_PRINT_CONTEX;
+      fprintf (stderr, "Error: RuleTimeValidator not initialized\n\n");
       // return as not validated rule
       return 1;
     }
 
+  // Loop for all rules
   for (int idx = 0; idx < self->row_count; idx++)
     {
+      // Loop for each rule's day
       for (int d = 0; d < 7; d++)
         {
-          if ((self->rules[idx].days[d] && days[d])
+          if ((self->rules[idx].days[d] && days[d]
+               && self->rules[idx].id != rule_id)
               && self->rules[idx].hour == hour
               && self->rules[idx].minutes == minutes)
             return self->rules[idx].id;

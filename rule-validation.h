@@ -27,16 +27,27 @@ typedef struct _RuleTimeValidator RuleTimeValidator;
 
 int rule_validate_rule (const Rule *rule);
 int rule_validate_table (const Table table);
+int rule_validade_rtcwake_args (const RtcwakeArgs *rtcwake_args);
 
 RuleTimeValidator *rule_validate_time_init (const Table table);
-// Returns 0 if the rule was validated
-// Return an id != 0, if the time is invalid; the id is an existing rule with a conflicting time
+/*
+ * Arguments:
+ *  rule_id: [1] if a new rule is being created, pass 0
+ *           [2] if a rule is being edited, pass its id
+ *
+ *  hour, minutes and days: [1] the values of the new rule, or
+ *                          [2] the new values of an existing rule
+ *
+ * Return value:
+ *  id == 0 if the rule was validated
+ *  id != 0, if the time is invalid; the id is an existing rule with a conflicting time
+ */
 uint16_t rule_validate_time (RuleTimeValidator *self,
+                             const uint16_t rule_id,
                              const uint8_t hour,
                              const uint8_t minutes,
                              const bool days[7]);
 void rule_validate_time_finalize (RuleTimeValidator **self);
 
-int rule_validade_rtcwake_args (const RtcwakeArgs *rtcwake_args);
 
 #endif /* RULE_VALIDATION_H_ */
